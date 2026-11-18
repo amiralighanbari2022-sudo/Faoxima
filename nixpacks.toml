@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ["php82", "composer", "mysql-client"]
+
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction",
+]
+
+[phases.build]
+cmds = []
+
+[phases.start]
+cmd = "php -S 0.0.0.0:$PORT -t ."
+
+[variables]
+COMPOSER_NO_SECURITY_BLOCKING = "1"
+RAILPACK_PHP_EXTENSIONS = "gd,zip,mysqli,pdo_mysql,intl,soap,bcmath,sockets"

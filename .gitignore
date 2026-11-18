@@ -1,0 +1,33 @@
+# Dependencies
+vendor/
+composer.lock
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+error_log
+storage/logs/*.log
+
+# Cache
+storage/cache/*
+!storage/cache/.gitignore
+
+# Installer (auto-deleted after install)
+installer/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

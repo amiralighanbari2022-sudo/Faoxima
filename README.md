@@ -1,151 +1,156 @@
-# راهنمای انتقال کامل ربات Faoxima به یک اکانت Railway جدید
+# Faoxima - Telegram VPN Bot Panel
 
-این راهنما رو مرحله به مرحله دنبال کن. نیازی به دانش برنامه‌نویسی نداری — فقط دقیق کپی/پیست کن.
+ربات تلگرام برای مدیریت پنل‌های VPN (Marzban, x-ui, Hiddify, Marzneshin, WGDashboard, IBSng, Mikrotik و ...)
 
----
+## 🚀 Deploy در Railway
 
-## قبل از شروع، این‌ها رو آماده کن
+### پیش‌نیازها
+- اکانت [GitHub](https://github.com)
+- اکانت [Railway](https://railway.app) (با GitHub لاگین کنید)
+- توکن ربات تلگرام (از @BotFather)
 
-- یک اکانت [GitHub](https://github.com) (رایگان)
-- یک اکانت [Railway](https://railway.com) (رایگان، با همون اکانت گیت‌هاب لاگین کن)
-- توکن ربات تلگرام فعلی (همونی که از BotFather گرفتی)
+### مراحل Deploy
 
----
+#### 1. Fork این ریپو
+ریپو را در GitHub خودتان Fork کنید.
 
-## مرحله ۱: فورک کردن کد روی گیت‌هاب خودت
-
-1. برو به: `https://github.com/huhfkkvd/Faoxima`
-2. گوشه‌ی بالا سمت راست دکمه‌ی **Fork** رو بزن
-3. تایید کن — الان یه کپی از کد، دقیقاً به آدرس `github.com/USERNAME-خودت/Faoxima` داری
-
----
-
-## مرحله ۲: ساخت پروژه‌ی جدید در Railway
-
-1. وارد [railway.com](https://railway.com) شو (با گیت‌هاب لاگین کن)
-2. **New Project** → **Empty Project** رو بزن
-3. اسمی مثل `Faoxima` بهش بده
-
----
-
-## مرحله ۳: اضافه کردن دیتابیس MySQL
-
-1. داخل پروژه، **+ New** → **Database** → **Add MySQL** رو بزن (یا از Docker Image: `mysql:8.0`)
-2. برو به تب **Variables** همون سرویس MySQL و این‌ها رو اضافه کن (یه رمز قوی برای پسورد بساز و همونو همه‌جا استفاده کن):
-
-```
-MYSQL_DATABASE=faoxima
-MYSQL_USER=faoxima
-MYSQL_PASSWORD=یک-رمز-قوی-بساز
-MYSQL_ROOT_PASSWORD=همون-رمز-بالا
-```
-
-3. برو به تب **Settings** همین سرویس، پایین‌تر بخش **Volumes** رو پیدا کن و یک Volume جدید با مسیر (Mount Path) زیر بساز تا اطلاعات دیتابیس با هر ری‌استارت پاک نشه:
-
-```
-/var/lib/mysql
-```
-
-4. توجه کن اسم این سرویس رو دقیقاً **MySQL** بذاری (این مهمه، چون آدرس داخلی‌ش می‌شه `mysql.railway.internal`).
-
----
-
-## مرحله ۴: اضافه کردن سرویس اصلی ربات
-
-1. داخل همون پروژه، **+ New** → **GitHub Repo** رو بزن و ریپوی فورک‌شده‌ی خودت (`USERNAME-خودت/Faoxima`) رو انتخاب کن
-2. Railway خودش شروع به بیلد می‌کنه (چند دقیقه طول می‌کشه)
-3. برو به تب **Variables** همین سرویس و این دو مقدار رو اضافه کن (خیلی مهمه، بدون این‌ها بیلد fail می‌شه):
-
-```
-COMPOSER_NO_SECURITY_BLOCKING=1
-RAILPACK_PHP_EXTENSIONS=gd,zip,mysqli,pdo_mysql,intl,soap,bcmath,sockets
-```
-
-4. برو به تب **Settings** → بخش **Networking** → دکمه‌ی **Generate Domain** رو بزن تا یه آدرس عمومی مثل زیر بگیری:
-
-```
-https://faoxima-bot-production-xxxx.up.railway.app
-```
-
-5. صبر کن تا وضعیت سرویس **Success / Online** بشه (تب Deployments رو نگاه کن).
-
----
-
-## مرحله ۵: اجرای نصب (Installer)
-
-1. توی مرورگر برو به:
-```
-https://آدرس-جدیدت/installer/
-```
-2. فرم رو مرحله به مرحله پر کن:
-   - مشخصات دیتابیس: همون `MYSQL_DATABASE` / `MYSQL_USER` / `MYSQL_PASSWORD` بالا
-   - هاست دیتابیس: `mysql.railway.internal`
-   - توکن ربات: همون توکن قبلی‌ات از BotFather
-   - آدرس صفحه‌ی سورس ربات (فیلد ۶ از ۷): دقیقاً این، با `https://` و بدون اسلش اضافه:
-     ```
-     https://آدرس-جدیدت/index.php
-     ```
-3. «شروع نصب» رو بزن. باید پیام «✅ ربات با موفقیت نصب شد» رو ببینی.
-
-> این مرحله فقط **جدول‌های خالی** رو می‌سازه. دیتای واقعی (کاربرا، سفارش‌ها، تنظیمات) رو مرحله‌ی بعد از اکانت قدیمی منتقل می‌کنیم.
-
----
-
-## مرحله ۶: انتقال دیتای واقعی از اکانت قدیمی
-
-### الف) گرفتن بکاپ از اکانت قدیمی
-1. توی پروژه‌ی **قدیمی** Railway، **+ New** → **Docker Image** بزن و این ایمیج رو وارد کن:
+#### 2. ساخت پروژه در Railway
+1. در Railway: **New Project** → **Empty Project**
+2. نام پروژه: `faoxima`
+3. **New** → **Database** → **Add MySQL**
+4. در تب **Variables** دیتابیس MySQL، این متغیرها را اضافه کنید:
    ```
-   adminer
+   MYSQL_DATABASE=faoxima
+   MYSQL_USER=faoxima
+   MYSQL_PASSWORD=یک-رمز-قوی-بسازید
+   MYSQL_ROOT_PASSWORD=همون-رمز-بالا
    ```
-2. یه Domain براش بساز (Generate Domain) و واردش شو.
-3. توی فرم لاگین Adminer:
-   - System: `MySQL`
-   - Server: `mysql.railway.internal`
-   - Username / Password: همون اطلاعات دیتابیس قدیمی
-   - Database: `faoxima`
-4. بعد از لاگین، بالای صفحه روی **Export** کلیک کن → **Execute** رو بزن تا یه فایل `.sql` دانلود بشه.
+5. در تب **Settings** دیتابیس، در بخش **Volumes** یک Volume با مسیر `/var/lib/mysql` بسازید.
+6. **مهم**: نام سرویس دیتابیس را دقیقاً `MySQL` بگذارید.
 
-### ب) وارد کردن بکاپ توی اکانت جدید
-1. همین‌طوری یه سرویس Adminer هم توی پروژه‌ی **جدید** بساز (مرحله‌ی بالا رو تکرار کن، ولی با اطلاعات دیتابیس جدید)
-2. وارد Adminer جدید شو، تب **Import** رو بزن
-3. فایل `.sql` که دانلود کرده بودی رو انتخاب کن و **Execute** بزن
-4. تمام — دیتای قدیمی جایگزین جدول‌های خالی می‌شه.
+#### 3. اضافه کردن سرویس ربات
+1. در پروژه Railway: **+ New** → **GitHub Repo** → ریپوی Fork شده خودتان را انتخاب کنید.
+2. Railway به صورت خودکار `nixpacks.toml` را می‌خواند و PHP 8.2 + extensions را نصب می‌کند.
+3. در تب **Variables** سرویس ربات، این متغیرها را اضافه کنید:
+   ```
+   COMPOSER_NO_SECURITY_BLOCKING=1
+   RAILPACK_PHP_EXTENSIONS=gd,zip,mysqli,pdo_mysql,intl,soap,bcmath,sockets
+   ```
+4. در تب **Settings** → **Networking** → **Generate Domain** بزنید تا آدرس عمومی بگیرید (مثال: `https://faoxima-xxxx.up.railway.app`)
 
-> بعد از تمام شدن، سرویس‌های Adminer (هم قدیمی هم جدید) رو حذف کن — دیگه لازم نیستن و امنیتی نیست بازشون بذاری.
+#### 4. اجرای Installer
+1. در مرورگر به آدرس زیر بروید:
+   ```
+   https://آدرس-ریلوی-شما/installer/
+   ```
+2. فرم را پر کنید:
+   - **آیدی عددی ادمین**: از @userinfobot بگیرید
+   - **توکن ربات**: از @BotFather
+   - **اطلاعات دیتابیس**: همان مقادیری که در MySQL Variables گذاشتید
+   - **هاست دیتابیس**: `mysql.railway.internal` (سخت‌کد شده در installer)
+   - **آدرس وب‌هوک ربات**: `https://آدرس-ریلوی-شما/index.php`
+3. دکمه **شروع نصب** را بزنید.
+4. پیام `✅ ربات با موفقیت نصب شد` را باید ببینید.
+
+#### 5. ست کردن Webhook تلگرام
+در مرورگر این آدرس را باز کنید:
+```
+https://api.telegram.org/bot<TOKEN_شما>/setWebhook?url=https://آدرس-ریلوی-شما/index.php
+```
+باید `{"ok":true,"result":true,"description":"Webhook was set"}` برگرداند.
+
+#### 6. تست
+در تلگرام به ربات `/start` بفرستید. منوی ربات باید بیاید.
 
 ---
 
-## مرحله ۷: وصل کردن Webhook تلگرام به سرور جدید
-
-توی مرورگر این آدرس رو بزن (به‌جای `TOKEN` توکن ربات، و به‌جای آدرس، دامنه‌ی جدیدت رو بذار):
+## 📁 ساختار پروژه
 
 ```
-https://api.telegram.org/botTOKEN/setWebhook?url=https://آدرس-جدیدت/index.php
+.
+├── index.php              # Entry point
+├── config.php             # Database config (پر می‌شود توسط installer)
+├── table.php              # Schema & migrations
+├── composer.json          # PHP dependencies
+├── nixpacks.toml          # Railway build config
+├── railway.json           # Railway deploy config
+├── Procfile               # Process definition
+├── version                # Version file
+├── installer/             # Web installer (auto-deleted after install)
+├── re/                    # Refactored core
+│   ├── rx/
+│   │   ├── index/         # Main bot logic
+│   │   ├── function/      # Helper functions
+│   │   ├── admin/         # Admin panel
+│   │   └── keyboard/      # Keyboard layouts
+├── api/                   # REST API for Mini App
+├── app/                   # Mini App frontend
+├── panel/                 # Admin web panel
+├── cronbot/               # Scheduled tasks
+├── payment/               # Payment gateways
+├── vendor/                # Composer dependencies (gitignored)
+└── storage/               # Cache & logs (gitignored)
 ```
-
-باید ببینی: `{"ok":true,"result":true,"description":"Webhook was set"}`
-
-برای تایید:
-```
-https://api.telegram.org/botTOKEN/getWebhookInfo
-```
-فیلد `url` باید همون آدرس جدید رو نشون بده.
 
 ---
 
-## مرحله ۸: تست نهایی
+## ⚙️ پیکربندی‌های مهم
 
-توی تلگرام برو به ربات و `/start` رو بزن. اگه منوی ربات اومد، همه‌چی درست کار می‌کنه ✅
+### متغیرهای محیطی Railway (Service Variables)
+| متغیر | مقدار | توضیح |
+|--------|--------|-------|
+| `COMPOSER_NO_SECURITY_BLOCKING` | `1` | برای نصب composer در Railway |
+| `RAILPACK_PHP_EXTENSIONS` | `gd,zip,mysqli,pdo_mysql,intl,soap,bcmath,sockets` | اکستنشن‌های PHP مورد نیاز |
+
+### دیتابیس
+- **Host**: `mysql.railway.internal` (داخلی Railway)
+- **Port**: 3306 (پیش‌فرض)
+- نام دیتابیس، یوزر، پسورد: از Variables دیتابیس MySQL
 
 ---
 
-## نکات مهم
+## 🔧 توسعه محلی
 
-- **پوشه‌ی installer** بعد از نصب موفق خودش پاک می‌شه (این طبیعیه، خودِ برنامه اینطوری طراحی شده).
-- اگه بعد از نصب، ربات به پیام‌ها جواب نداد ولی Webhook درست بود، احتمالاً یه فایل دیگه هنوز `localhost` داره — چک کن:
-  - `config.php` (دو جا: `mysqli_connect` و `$dsn = 'mysql:host=...'`)
-  - `installer/index.php`
-  همه‌ی این‌ها باید `mysql.railway.internal` باشن، نه `localhost`.
-- می‌تونی اکانت Railway و ریپوی گیت‌هاب قدیمی رو بعد از تایید کامل‌بودن انتقال، پاک کنی.
+```bash
+# نصب وابستگی‌ها
+composer install
 
+# اجرای سرور توسعه
+php -S localhost:8000 -t .
+```
+
+سپس به `http://localhost:8000/installer/` بروید برای نصب.
+
+---
+
+## 📝 نکات مهم
+
+1. **پوشه `installer/`** بعد از نصب موفق به‌صورت خودکار حذف می‌شود (برای امنیت).
+2. **Webhook URL** باید HTTPS باشد (Railway به صورت پیش‌فرض HTTPS می‌دهد).
+3. **دیتابیس MySQL** باید Volume داشته باشد تا داده‌ها با ری‌استارت پاک نشوند.
+4. **نام سرویس دیتابیس** باید `MySQL` باشد تا hostname داخلی `mysql.railway.internal` کار کند.
+5. اگر پس از نصب ربات جواب نداد، `config.php` را چک کنید که `mysql.railway.internal` ست شده باشد.
+
+---
+
+## 🆘 عیب‌یابی رایج
+
+| مشکل | راه‌حل |
+|--------|--------|
+| بیلد fail می‌شود | مطمئن شوید `nixpacks.toml` و `composer.json` در ریشه پروژه هستند |
+| دیتابیس connect نمی‌شود | چک کنید نام سرویس MySQL است و Variables درست ست شده |
+| Installer باز نمی‌شود | مطمئن شوید `installer/index.php` وجود دارد و HTTPS فعال است |
+| ربات پیام نمی‌دهد | Webhook را چک کنید: `https://api.telegram.org/bot<TOKEN>/getWebhookInfo` |
+| Extensions گم شده | `RAILPACK_PHP_EXTENSIONS` در Variables سرویس ربات ست شده باشد |
+
+---
+
+## 📄 لایسنس
+MIT License - به فایل [LICENSE](LICENSE) مراجعه کنید.
+
+---
+
+## 🔗 لینک‌ها
+- [مخزن اصلی](https://github.com/x4gpanell/Faoxima)
+- [کانال تلگرام](https://t.me/faoxima)
+- [راهنمای Railway](https://docs.railway.app)
